@@ -1,38 +1,23 @@
-import requests
-from constants import URL 
-from bs4 import BeautifulSoup as BS
 from flask import Flask
+from util import StartNgrok, VerificarMatricula
 
 
-def VerificarMatricula(matricula, curso):
-    try:
-        url = URL.CURSOS[curso.lower()]
-        req = requests.get(url)
-    except KeyError:
-        print("Chave inválida")
-        return
-    except:
-        print("Curso não cadastrado")
-        return
-    
-    soup = BS(req.text, 'html.parser')
+app     = Flask(__name__)
+port    = 8080
 
-    table   = soup.find_all("table", class_="listagem")[0]
-    tbody   = table.find("tbody")
-    alunos  = tbody.find_all("tr")
 
-    alunoExiste = False
+@app.get("/")
+def index():
+    return "<h1>Online</h1>"
 
-    for aluno in alunos:
-        mat = aluno.find(class_="colMatricula")
-        if mat:
-            if mat.text == matricula:
-                alunoExiste = True
-                break
 
-    if alunoExiste:
-        print("Aluno matriculado")
-    else:
-        print("Aluno morreu")
+@app.get("/verificar_matricula/<matricula>")
+def verificar(matricula):
+    existe = VerificarMatricula(matricula, 'ecologia')
+    return 'aluno encontrado' if existe else 'aluno não encontrado'
 
-VerificarMatricula("23432423", "si")
+
+if __name__ == "__main__":
+    # StartNgrok(port)
+    app.run(port=port, debug=True)
+
