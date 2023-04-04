@@ -1,6 +1,7 @@
-from flask import Flask
+import json
+from flask import Flask, request
 from constants import URL
-from util import StartNgrok, VerificarMatricula, RetornarNome
+from util import RetornarMatricula, StartNgrok, VerificarMatricula, RetornarNome
 
 
 app     = Flask(__name__)
@@ -32,7 +33,15 @@ def verificar(matricula):
 def buscaAluno(curso, matricula):
     nomeAluno = RetornarNome(curso, matricula)
     return "aluno não encontrado" if nomeAluno == None else nomeAluno
-    
+
+
+@app.get("/busca_matricula")
+def buscaMatricula():
+
+    body = json.loads(request.data)
+
+    return RetornarMatricula(body["nome"])
+
 
 
 if __name__ == "__main__":

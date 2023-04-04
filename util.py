@@ -95,5 +95,31 @@ def RetornarNome(curso, matricula):
     
     return
 
+
+def RetornarMatricula(nome):
+    todasMatriculas = []
+    for nomeCurso, urlCurso in URL.CURSOS.items():
+        try:
+            req = requests.get(urlCurso)
+        except:
+            print("Curso não cadastrado")
+            continue
+        
+        soup = BS(req.text, 'html.parser')
+
+        table   = soup.find_all("table", class_="listagem")[0]
+        tbody   = table.find("tbody")
+        alunos  = tbody.find_all("tr")
+
+        for aluno in alunos:
+            alunoCompleto = aluno.find_all("td")
+            if len(alunoCompleto) > 1:
+                nomeAluno = alunoCompleto[1].text
+                if nomeAluno.lower() == nome.lower():
+                    todasMatriculas.append(alunoCompleto[0].text)
+    
+    return todasMatriculas
+
+
 # StartNgrok(6756)
 # EndNgrok()
