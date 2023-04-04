@@ -68,6 +68,32 @@ def EndNgrok():
         ngrok.disconnect(tunnel.public_url)
         ngrok.kill()
 
+def RetornarNome(curso, matricula):
+    try:
+        url = URL.CURSOS[curso.lower()]
+        req = requests.get(url)
+    except KeyError:
+        print("Chave inválida")
+        return
+    except:
+        print("Curso não cadastrado")
+        return
+    
+    soup = BS(req.text, 'html.parser')
+
+    table   = soup.find_all("table", class_="listagem")[0]
+    tbody   = table.find("tbody")
+    alunos  = tbody.find_all("tr")
+
+    for aluno in alunos:
+        alunoCompleto = aluno.find_all("td")
+        if len(alunoCompleto) > 1:
+            matAluno = alunoCompleto[0].text
+            nomeAluno = alunoCompleto[1].text
+            if matAluno == matricula:
+                return nomeAluno
+    
+    return
 
 # StartNgrok(6756)
 # EndNgrok()
