@@ -1,4 +1,5 @@
 from flask import Flask
+from constants import URL
 from util import StartNgrok, VerificarMatricula, RetornarNome
 
 
@@ -13,8 +14,19 @@ def index():
 
 @app.get("/verificar_matricula/<matricula>")
 def verificar(matricula):
-    existe = VerificarMatricula(matricula, 'ecologia')
+    existe = False
+
+    # nomeDosCursos = ["ecologia", "lcc", "design", "si"]
+    nomeDosCursos = URL.CURSOS.keys()
+
+    # nomeCurso = "ecologia"
+    for nomeCurso in nomeDosCursos:
+        if VerificarMatricula(matricula, nomeCurso):
+            existe = True
+            break
+
     return 'aluno encontrado' if existe else 'aluno não encontrado'
+
 
 @app.get("/busca_aluno/curso=<curso>&matricula=<matricula>")
 def buscaAluno(curso, matricula):
